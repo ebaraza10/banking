@@ -16,3 +16,4 @@
  6. Rename the application_template.properties founnd in docker-dependency-services/api to be docker-dependency-services/api/application.properties
  7. Edit the configurations in docker-dependency-services/api/application.properties to match your credentials.
  8. Fire up the containers in detatched mode: docker-compose -f docker-compose-prod.yml up -d
+ 
