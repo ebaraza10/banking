@@ -17,20 +17,6 @@ services:
     networks:
       - nginx_network
       - db_network
-  # suffacer:
-  #   restart: always
-  #   build:
-  #     context: ./docker-dependency-services/python_predictor
-  #     dockerfile: Dockerfile
-  #   command: sh -c "gunicorn suffacer.wsgi:application --bind 0.0.0.0:8009 --chdir /usr/src/app"
-  #   expose:
-  #     - 8009
-  #   env_file: .env
-  #   volumes:
-  #     - ${SUFFACER_HOST_SYSTEM_LOCATION}:/usr/src/app
-  #   networks:
-  #     - nginx_network
-  #     - python_predictor_network
   mongo_db:
     restart: always
     build:
@@ -53,9 +39,11 @@ services:
     volumes:
       - static_volume:/usr/src/app/staticfiles
       - media_volume:/usr/src/app/media
+      - ${FRONTEND_BUILD_LOCATION}:/usr/share/nginx/html
     ports:
       - 8004:8004
-      - 8005:8088
+      - 80:80
+      - 443:443
     depends_on:
       - api
     networks:
