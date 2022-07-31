@@ -1,0 +1,6 @@
+docker-dependency-services/frontend/node_modules/*
+docker-dependency-services/api/application.properties
+docker-dependency-services/mongo_db/data/*
+.DS_Store
+.env
+.vscode/

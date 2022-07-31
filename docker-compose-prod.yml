@@ -1,0 +1,70 @@
+version: '3'
+
+services:
+  api:
+    restart: always
+    build:
+      context: ./docker-dependency-services/api
+      dockerfile: Dockerfile
+    command: sh -c "java -jar /usr/src/app/build/libs/api.jar"
+    expose:
+      - 8080
+    env_file: .env
+    volumes:
+      - ${API_HOST_SYSTEM_LOCATION}:/usr/src/app
+    depends_on:
+      - mongo_db
+    networks:
+      - nginx_network
+      - db_network
+  # suffacer:
+  #   restart: always
+  #   build:
+  #     context: ./docker-dependency-services/python_predictor
+  #     dockerfile: Dockerfile
+  #   command: sh -c "gunicorn suffacer.wsgi:application --bind 0.0.0.0:8009 --chdir /usr/src/app"
+  #   expose:
+  #     - 8009
+  #   env_file: .env
+  #   volumes:
+  #     - ${SUFFACER_HOST_SYSTEM_LOCATION}:/usr/src/app
+  #   networks:
+  #     - nginx_network
+  #     - python_predictor_network
+  mongo_db:
+    restart: always
+    build:
+      context: ./docker-dependency-services/mongo_db
+      dockerfile: Dockerfile
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_PASSWORD}
+    volumes:
+      - ${MONGO_HOST_DATA_LOCATION}:/data/db
+    expose:
+      - 27017
+    networks:
+      - db_network
+  nginx:
+    restart: always
+    build:
+        context: ./docker-dependency-services/nginx/
+        dockerfile: Dockerfile
+    volumes:
+      - static_volume:/usr/src/app/staticfiles
+      - media_volume:/usr/src/app/media
+    ports:
+      - 8004:8004
+      - 8005:8088
+    depends_on:
+      - api
+    networks:
+      - nginx_network
+  
+volumes:
+  static_volume:
+  media_volume:
+
+networks:
+  db_network:
+  nginx_network:
